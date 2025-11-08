@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
+from fastapi import APIRouter, UploadFile, File, Query, HTTPException
 from fastapi.responses import JSONResponse
 from pathlib import Path
 import shutil
@@ -9,21 +9,18 @@ router = APIRouter(prefix="/admin", tags=["admin"])
 # Simple auth check (you can improve this)
 ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "change-me-in-production")
 
-def verify_admin(token: str = None):
-    """Simple admin verification."""
-    if token != ADMIN_TOKEN:
-        raise HTTPException(status_code=403, detail="Unauthorized")
-    return True
-
 
 @router.post("/upload-db")
 async def upload_database(
     file: UploadFile = File(...),
-    token: str = None,
-    _: bool = Depends(verify_admin),
+    token: str = Query(None),
 ):
     """Upload database file to /data directory."""
-    if not file.filename.endswith('.db'):
+    # Verify token
+    if token != ADMIN_TOKEN:
+        raise HTTPException(status_code=403, detail="Unauthorized - invalid token")
+    
+    if not file.filename or not file.filename.endswith('.db'):
         raise HTTPException(status_code=400, detail="File must be a .db file")
     
     # Determine data directory
@@ -31,6 +28,9 @@ async def upload_database(
         db_path = Path("/data/hsd_ngo.db")
     else:
         db_path = Path("./hsd_ngo.db")
+    
+    # Ensure directory exists
+    db_path.parent.mkdir(parents=True, exist_ok=True)
     
     # Save uploaded file
     try:
@@ -42,6 +42,7 @@ async def upload_database(
             "status": "success",
             "message": "Database uploaded successfully",
             "file_size": file_size,
+            "file_size_mb": round(file_size / 1024 / 1024, 2),
             "path": str(db_path)
         })
     except Exception as e:
