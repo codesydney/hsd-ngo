@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NSW Human Services Data Hub - NGO Providers{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#000000',
+                        secondary: '#6B7280',
+                        accent: '#000000',
+                        danger: '#000000'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                        'hand': ['Kalam', 'cursive', 'system-ui']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="/static/img/vc-logo.svg">
+    <link rel="shortcut icon" href="/static/img/vc-logo.svg">
+    <link rel="apple-touch-icon" href="/static/img/vc-logo.svg">
+    {% block head %}{% endblock %}
+</head>
+<body class="h-full bg-white">
+    <div class="min-h-full flex flex-col">
+        <!-- Navigation -->
+        <nav class="bg-white border-b-2 border-black">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <a href="/" class="text-2xl font-hand font-bold text-black flex items-center hover:text-gray-600 transition-colors">
+                            <img src="/static/img/vc-logo.svg" alt="Vibecamp Logo" class="w-10 h-10 mr-3 flex-shrink-0" style="display: inline-block;">
+                            NSW NGO Providers Explorer
+                        </a>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <a href="/" class="text-black hover:text-gray-600 px-3 py-2 rounded-md text-sm font-medium font-hand">
+                            Home
+                        </a>
+                        <a href="/providers" class="text-black hover:text-gray-600 px-3 py-2 rounded-md text-sm font-medium font-hand">
+                            Browse
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-1">
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-white border-t-2 border-black py-8 mt-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center space-y-4">
+                    <div class="text-sm text-gray-600 font-sans">
+                        <p>Data sourced from <a href="https://data.nsw.gov.au/data/dataset/human-services-data-hub-ngo-providers-2014-15" target="_blank" class="text-black hover:underline font-medium">Human Services Data Hub – NGO Providers 2014‑15</a>, Government of New South Wales, available at <a href="https://data.nsw.gov.au/data/dataset/human-services-data-hub-ngo-providers-2014-15" target="_blank" class="text-black hover:underline font-medium">data.nsw.gov.au</a></p>
+                        <p>Licensed under <a href="https://creativecommons.org/licenses/by/3.0/au/" target="_blank" class="text-black hover:underline font-medium">Creative Commons Attribution (CC BY 3.0 AU)</a></p>
+                    </div>
+                    <div class="text-sm text-black font-hand">
+                        <p>A <a href="https://vibecamp.au/" target="_blank" class="text-black hover:underline font-bold">Vibecamp</a> Creation</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
+

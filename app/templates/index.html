@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-white py-8 sm:py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-8 sm:mb-12">
+            <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-hand font-bold text-black mb-4">
+                NSW Human Services Data Hub
+            </h1>
+            <p class="text-base sm:text-lg md:text-xl text-gray-600 mb-2 sm:mb-3 font-sans">
+                Explore NGO providers and services across New South Wales
+            </p>
+            <p class="text-xs sm:text-sm text-gray-500 max-w-3xl mx-auto px-4 font-sans">
+                The Human Services Data Hub aggregates data about human services funded by NSW Government. This dataset lists NGO providers who had active service agreements in 2014/15 and 2015/16. It includes the services, locations and target groups covered by each agreement.
+            </p>
+        </div>
+
+        <!-- Search Form -->
+        <div class="bg-white border-2 border-black rounded-lg shadow-lg p-4 sm:p-6 mb-6 sm:mb-8 max-w-3xl mx-auto">
+            <h2 class="text-xl sm:text-2xl font-hand font-bold text-black mb-4 sm:mb-6">
+                🔍 Search Providers
+            </h2>
+            <form action="/providers" method="get" class="space-y-4 sm:space-y-6">
+                <div>
+                    <label for="search" class="block text-sm font-medium text-black mb-2 font-hand">
+                        Search
+                    </label>
+                    <input 
+                        type="text" 
+                        id="search" 
+                        name="search"
+                        class="w-full px-4 py-3 border-2 border-black rounded-lg focus:ring-2 focus:ring-black focus:border-transparent text-base sm:text-lg font-sans"
+                        placeholder="Search by provider name, program, or location..."
+                    >
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="local_health_district" class="block text-sm font-medium text-black mb-2 font-hand">
+                            Local Health District
+                        </label>
+                        <select 
+                            id="local_health_district" 
+                            name="local_health_district"
+                            class="w-full px-3 py-2 border-2 border-black rounded-md focus:ring-2 focus:ring-black focus:border-transparent font-sans"
+                        >
+                            <option value="">All Districts</option>
+                            {% for district in filters.local_health_districts %}
+                            <option value="{{ district }}">{{ district }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="commissioning_agency" class="block text-sm font-medium text-black mb-2 font-hand">
+                            Commissioning Agency
+                        </label>
+                        <select 
+                            id="commissioning_agency" 
+                            name="commissioning_agency"
+                            class="w-full px-3 py-2 border-2 border-black rounded-md focus:ring-2 focus:ring-black focus:border-transparent font-sans"
+                        >
+                            <option value="">All Agencies</option>
+                            {% for agency in filters.commissioning_agencies %}
+                            <option value="{{ agency }}">{{ agency }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <button 
+                    type="submit"
+                    class="w-full sm:w-auto bg-black text-white px-6 sm:px-8 py-3 rounded-lg hover:bg-gray-800 focus:ring-2 focus:ring-black focus:ring-offset-2 transition-colors duration-200 font-hand font-bold text-base sm:text-lg"
+                >
+                    🔍 Search
+                </button>
+            </form>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto mb-8 sm:mb-12">
+            <div class="bg-white border-2 border-black rounded-lg shadow-md p-4 sm:p-6 text-center">
+                <div class="text-3xl sm:text-4xl font-hand font-bold text-black mb-2">{{ total }}</div>
+                <div class="text-sm sm:text-base text-gray-600 font-sans">Total Providers</div>
+            </div>
+            <div class="bg-white border-2 border-black rounded-lg shadow-md p-4 sm:p-6 text-center">
+                <div class="text-3xl sm:text-4xl font-hand font-bold text-black mb-2">{{ filters.local_health_districts|length }}</div>
+                <div class="text-sm sm:text-base text-gray-600 font-sans">Health Districts</div>
+            </div>
+            <div class="bg-white border-2 border-black rounded-lg shadow-md p-4 sm:p-6 text-center">
+                <div class="text-3xl sm:text-4xl font-hand font-bold text-black mb-2">{{ filters.commissioning_agencies|length }}</div>
+                <div class="text-sm sm:text-base text-gray-600 font-sans">Agencies</div>
+            </div>
+        </div>
+
+        <!-- Recent Providers -->
+        {% if providers %}
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-xl sm:text-2xl font-hand font-bold text-black mb-4 sm:mb-6 px-4 sm:px-6 lg:px-8">
+                Recent Providers
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4 sm:px-6 lg:px-8">
+                {% for provider in providers[:6] %}
+                <div class="bg-white border-2 border-black rounded-lg shadow-md p-4 sm:p-6 hover:shadow-lg transition-shadow duration-200">
+                    <h3 class="text-lg sm:text-xl font-hand font-bold text-black mb-2">{{ provider.provider_name }}</h3>
+                    {% if provider.local_health_district %}
+                    <div class="flex items-center text-black mb-2">
+                        <span class="font-sans text-sm">🏥 {{ provider.local_health_district }}</span>
+                    </div>
+                    {% endif %}
+                    {% if provider.program_name %}
+                    <div class="flex items-center text-black mb-2">
+                        <span class="font-sans text-sm">📋 {{ provider.program_name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if provider.commissioning_agency %}
+                    <div class="mt-4">
+                        <span class="px-2 py-1 bg-black text-white text-xs rounded-full font-sans">
+                            {{ provider.commissioning_agency }}
+                        </span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="text-center mt-6 sm:mt-8">
+                <a href="/providers" class="inline-block bg-black text-white px-6 sm:px-8 py-3 rounded-lg hover:bg-gray-800 transition-colors duration-200 font-hand font-bold text-base sm:text-lg">
+                    View All Providers
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

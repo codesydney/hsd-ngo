@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-white py-8 sm:py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mb-6 sm:mb-8">
+            <h1 class="text-2xl sm:text-3xl md:text-4xl font-hand font-bold text-black mb-4">
+                NGO Providers
+            </h1>
+            <p class="text-base sm:text-lg text-gray-600 font-sans">
+                Showing {{ providers|length }} of {{ total }} providers
+            </p>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white border-2 border-black rounded-lg shadow-lg p-4 sm:p-6 mb-6 sm:mb-8">
+            <h2 class="text-xl sm:text-2xl font-hand font-bold text-black mb-4 sm:mb-6">
+                🔍 Filters
+            </h2>
+            <form action="/providers" method="get" class="space-y-4 sm:space-y-6">
+                <div>
+                    <label for="search" class="block text-sm font-medium text-black mb-2 font-hand">
+                        Search
+                    </label>
+                    <input 
+                        type="text" 
+                        id="search" 
+                        name="search"
+                        value="{{ search or '' }}"
+                        class="w-full px-4 py-3 border-2 border-black rounded-lg focus:ring-2 focus:ring-black focus:border-transparent text-base sm:text-lg font-sans"
+                        placeholder="Search by provider name, program, or location..."
+                    >
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="local_health_district" class="block text-sm font-medium text-black mb-2 font-hand">
+                            Local Health District
+                        </label>
+                        <select 
+                            id="local_health_district" 
+                            name="local_health_district"
+                            class="w-full px-3 py-2 border-2 border-black rounded-md focus:ring-2 focus:ring-black focus:border-transparent font-sans"
+                        >
+                            <option value="">All Districts</option>
+                            {% for district in filters.local_health_districts %}
+                            <option value="{{ district }}" {% if local_health_district == district %}selected{% endif %}>{{ district }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="commissioning_agency" class="block text-sm font-medium text-black mb-2 font-hand">
+                            Commissioning Agency
+                        </label>
+                        <select 
+                            id="commissioning_agency" 
+                            name="commissioning_agency"
+                            class="w-full px-3 py-2 border-2 border-black rounded-md focus:ring-2 focus:ring-black focus:border-transparent font-sans"
+                        >
+                            <option value="">All Agencies</option>
+                            {% for agency in filters.commissioning_agencies %}
+                            <option value="{{ agency }}" {% if commissioning_agency == agency %}selected{% endif %}>{{ agency }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                    <button 
+                        type="submit"
+                        class="flex-1 bg-black text-white px-6 sm:px-8 py-3 rounded-lg hover:bg-gray-800 focus:ring-2 focus:ring-black focus:ring-offset-2 transition-colors duration-200 font-hand font-bold text-base sm:text-lg"
+                    >
+                        🔍 Apply Filters
+                    </button>
+                    <a 
+                        href="/providers"
+                        class="flex-1 text-center bg-white text-black border-2 border-black px-6 sm:px-8 py-3 rounded-lg hover:bg-black hover:text-white transition-colors duration-200 font-hand font-bold text-base sm:text-lg"
+                    >
+                        Clear Filters
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Providers List -->
+        {% if providers %}
+        <div class="space-y-4 sm:space-y-6">
+            {% for provider in providers %}
+            <div class="bg-white border-2 border-black rounded-lg shadow-md p-4 sm:p-6 hover:shadow-lg transition-shadow duration-200">
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 space-y-2 sm:space-y-0">
+                    <h3 class="text-lg sm:text-xl font-hand font-bold text-black">{{ provider.provider_name }}</h3>
+                    {% if provider.commissioning_agency %}
+                    <span class="px-3 py-1 bg-black text-white text-xs sm:text-sm rounded-full self-start sm:self-auto font-sans">
+                        {{ provider.commissioning_agency }}
+                    </span>
+                    {% endif %}
+                </div>
+                
+                <div class="space-y-3">
+                    {% if provider.local_health_district %}
+                    <div class="flex items-center text-black">
+                        <span class="font-sans">🏥 <strong>Health District:</strong> {{ provider.local_health_district }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if provider.local_government_area %}
+                    <div class="flex items-center text-black">
+                        <span class="font-sans">📍 <strong>LGA:</strong> {{ provider.local_government_area }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if provider.program_name %}
+                    <div class="flex items-center text-black">
+                        <span class="font-sans">📋 <strong>Program:</strong> {{ provider.program_name }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if provider.target_group %}
+                    <div class="flex items-center text-black">
+                        <span class="font-sans">👥 <strong>Target Group:</strong> {{ provider.target_group }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if provider.classification %}
+                    <div class="flex items-center text-black">
+                        <span class="font-sans">🏷️ <strong>Classification:</strong> {{ provider.classification }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if provider.agreement_start_date or provider.agreement_end_date %}
+                    <div class="flex items-center text-black">
+                        <span class="font-sans">
+                            📅 <strong>Agreement:</strong> 
+                            {% if provider.agreement_start_date %}{{ provider.agreement_start_date }}{% endif %}
+                            {% if provider.agreement_start_date and provider.agreement_end_date %} - {% endif %}
+                            {% if provider.agreement_end_date %}{{ provider.agreement_end_date }}{% endif %}
+                        </span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if total > limit %}
+        <nav class="flex flex-wrap items-center justify-center gap-2 sm:gap-1 mt-8 sm:mt-12">
+            {% if skip > 0 %}
+            <a 
+                href="/providers?skip={{ skip - limit }}&limit={{ limit }}{% if local_health_district %}&local_health_district={{ local_health_district }}{% endif %}{% if commissioning_agency %}&commissioning_agency={{ commissioning_agency }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
+                class="px-3 py-2 text-sm font-medium text-black bg-white border-2 border-black rounded-md hover:bg-black hover:text-white min-w-[80px] font-hand"
+            >
+                Previous
+            </a>
+            {% endif %}
+            
+            {% set current_page = (skip // limit) + 1 %}
+            {% set total_pages = (total // limit) + (1 if total % limit > 0 else 0) %}
+            {% set start_page = [1, current_page - 2]|max %}
+            {% set end_page = [total_pages, current_page + 2]|min %}
+            
+            {% for page in range(start_page, end_page + 1) %}
+            <a 
+                href="/providers?skip={{ (page - 1) * limit }}&limit={{ limit }}{% if local_health_district %}&local_health_district={{ local_health_district }}{% endif %}{% if commissioning_agency %}&commissioning_agency={{ commissioning_agency }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
+                class="px-3 py-2 text-sm font-medium {% if page == current_page %}text-white bg-black{% else %}text-black bg-white border-2 border-black hover:bg-black hover:text-white{% endif %} rounded-md min-w-[40px] font-hand"
+            >
+                {{ page }}
+            </a>
+            {% endfor %}
+            
+            {% if skip + limit < total %}
+            <a 
+                href="/providers?skip={{ skip + limit }}&limit={{ limit }}{% if local_health_district %}&local_health_district={{ local_health_district }}{% endif %}{% if commissioning_agency %}&commissioning_agency={{ commissioning_agency }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
+                class="px-3 py-2 text-sm font-medium text-black bg-white border-2 border-black rounded-md hover:bg-black hover:text-white min-w-[80px] font-hand"
+            >
+                Next
+            </a>
+            {% endif %}
+        </nav>
+        {% endif %}
+        {% else %}
+        <div class="text-center py-12">
+            <div class="text-4xl mb-4">🔍</div>
+            <h3 class="text-lg font-medium text-black mb-2 font-hand">No results found</h3>
+            <p class="text-black font-sans">Try adjusting your search criteria</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
