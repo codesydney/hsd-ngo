@@ -83,9 +83,18 @@ fly deploy
 ```
 
 3. Load data (after deployment):
+
+**Option A: Upload existing database file (fastest)**
 ```bash
-fly ssh console -a hsd-ngo
-# Upload CSV and run load_data.py
+# If you have hsd_ngo.db locally:
+./scripts/deploy_db.sh
+```
+
+**Option B: Upload CSV and load on Fly.io**
+```bash
+# Upload CSV and load script
+flyctl ssh sftp shell -a hsd-ngo
+# Then upload CSV and run load_data.py
 ```
 
 ## Data Attribution
