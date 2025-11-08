@@ -1,8 +1,10 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from app.database import init_db
 from app.routes import api_router
+import time
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -18,6 +20,15 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan
 )
+
+# Increase timeout for large file uploads
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    response.headers["X-Process-Time"] = str(process_time)
+    return response
 
 # Mount static files
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
