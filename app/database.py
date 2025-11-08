@@ -4,13 +4,8 @@ from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlmodel import SQLModel
 
-# Determine database path
-if os.path.exists("/data"):
-    # Production on Fly.io - use volume
-    DB_PATH = Path("/data/hsd_ngo.db")
-else:
-    # Development - use local file
-    DB_PATH = Path("./hsd_ngo.db")
+# Database path - use local file
+DB_PATH = Path("./hsd_ngo.db")
 
 # Ensure directory exists
 DB_PATH.parent.mkdir(parents=True, exist_ok=True)

@@ -72,29 +72,23 @@ The application will be available at `http://localhost:8000`
 
 ### Fly.io
 
-1. Create volume:
+1. Deploy:
 ```bash
-fly volumes create hsd_ngo_data --size 10 --region lax
+flyctl deploy
 ```
 
-2. Deploy:
+2. Load data (after deployment):
 ```bash
-fly deploy
-```
+# SSH into the machine
+flyctl ssh console -a hsd-ngo
 
-3. Load data (after deployment):
+# Download CSV and load
+# Option 1: Upload CSV via SFTP, then run:
+python scripts/load_data.py /path/to/data.csv
 
-**Option A: Upload existing database file (fastest)**
-```bash
-# If you have hsd_ngo.db locally:
-./scripts/deploy_db.sh
-```
-
-**Option B: Upload CSV and load on Fly.io**
-```bash
-# Upload CSV and load script
-flyctl ssh sftp shell -a hsd-ngo
-# Then upload CSV and run load_data.py
+# Option 2: Download CSV directly on the machine:
+curl -o data.csv "https://data.nsw.gov.au/data/dataset/0d915408-0026-44f7-a477-5f29ad7708ea/resource/0ad7196f-f7e8-45fd-957d-79394255b0ef/download/tab-b-open-data-r020-hsdh-2014-2015.csv"
+python scripts/load_data.py data.csv
 ```
 
 ## Data Attribution

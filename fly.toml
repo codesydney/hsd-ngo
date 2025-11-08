@@ -20,8 +20,3 @@ primary_region = "lax"
   cpu_kind = 'shared'
   cpus = 1
 
-# CRITICAL: Mount volume for persistent data
-[[mounts]]
-  source = "hsd_ngo_data"
-  destination = "/data"
-
